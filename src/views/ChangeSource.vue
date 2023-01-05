@@ -36,12 +36,12 @@ const resetMirror = async (type: number) => {
     status.value = true;
     const res = await resetNodeMirror();
     status.value = false;
-    await alert('完成');
+    alert('完成');
   } else if (type === 1) {
     status.value = true;
     const res = await resetNpmMirror();
     status.value = false;
-    await alert('完成');
+    alert('完成');
   }
 };
 </script>
