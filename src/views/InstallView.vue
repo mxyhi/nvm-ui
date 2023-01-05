@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { installNodeVersion } from '@/shell/nvm';
+import { installNodeVersion } from '@/cmd/nvm';
 import { IconLeft } from '@arco-design/web-vue/es/icon';
 import { ref } from 'vue';
 
@@ -7,7 +7,6 @@ const version = ref('');
 const installStatus = ref(false);
 
 const install = async () => {
-  console.log(version.value);
   if (version.value) {
     if (await confirm(`确认安装: v${version.value} ?`)) {
       installStatus.value = true;
@@ -39,7 +38,7 @@ const install = async () => {
       <a-space direction="vertical" fill>
         <a-input
           class="version_input"
-          placeholder="请输入版本号"
+          placeholder="请输入版本号: 例: 16.16.0"
           allow-clear
           v-model.trim="version"
         />

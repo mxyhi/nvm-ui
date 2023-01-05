@@ -4,23 +4,25 @@ import {
   setNodeVersion,
   type NvmListStatus,
   uninstallNodeVersion,
-} from '@/shell/nvm';
+} from '@/cmd/nvm';
 import {
   IconCheckCircleFill,
   IconPlayCircleFill,
   IconDownload,
   IconCloseCircleFill,
+  IconCloud,
 } from '@arco-design/web-vue/es/icon';
-import { onMounted, ref } from 'vue';
-import { RouterView } from 'vue-router';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 const nvmList = ref<NvmListStatus[]>([]);
+
+let timer: number;
 
 const changeNvmList = async () => {
   try {
     const res = await getNodeList();
     nvmList.value = res;
-    const timer = setTimeout(() => {
+    timer = setTimeout(() => {
       changeNvmList();
       clearTimeout(timer);
     }, 2000);
@@ -28,6 +30,10 @@ const changeNvmList = async () => {
     alert('请安装nvm');
   }
 };
+
+onBeforeUnmount(() => {
+  clearTimeout(timer);
+});
 
 onMounted(async () => {
   changeNvmList();
@@ -50,7 +56,6 @@ const uninstallVersion = async (version: string) => {
 </script>
 
 <template>
-  <RouterView></RouterView>
   <div class="header">
     <a-space>
       <a-button @click="$router.replace('/install')" type="primary">
@@ -59,6 +64,13 @@ const uninstallVersion = async (version: string) => {
         </template>
         <!-- Use the default slot to avoid extra spaces -->
         <template #default>安装</template>
+      </a-button>
+      <a-button @click="$router.replace('/change-source')" type="primary">
+        <template #icon>
+          <icon-cloud />
+        </template>
+        <!-- Use the default slot to avoid extra spaces -->
+        <template #default>换源</template>
       </a-button>
     </a-space>
   </div>
@@ -82,7 +94,6 @@ const uninstallVersion = async (version: string) => {
 <style lang="scss" scoped>
 .header {
   position: fixed;
-  background: #fff;
   z-index: 2;
   left: 0;
   top: 0;
@@ -102,7 +113,7 @@ const uninstallVersion = async (version: string) => {
 .arco-icon-play-circle-fill {
   font-size: 28px;
   stroke-width: 5;
-  color: #27ae60;
+  color: #3498db;
 }
 .arco-icon-close-circle-fill {
   font-size: 28px;

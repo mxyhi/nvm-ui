@@ -58,3 +58,43 @@ export const uninstallNodeVersion = async (version: string) => {
   (await command.spawn()).kill();
   return res.code === 0 ? res.stdout : res.stderr;
 };
+
+/**
+ * node换源
+ */
+export const setNodeMirror = async (mirror: string) => {
+  const command = new Command('nvm', ['node_mirror', mirror]);
+  const res = await command.execute();
+  (await command.spawn()).kill();
+  return res.code === 0 ? res.stdout : res.stderr;
+};
+
+/**
+ * npm换源
+ */
+export const setNpmMirror = async (mirror: string) => {
+  const command = new Command('nvm', ['npm_mirror', mirror]);
+  const res = await command.execute();
+  (await command.spawn()).kill();
+  return res.code === 0 ? res.stdout : res.stderr;
+};
+
+/**
+ * node重置源
+ */
+export const resetNodeMirror = async () => {
+  const command = new Command('nvm', ['npm_mirror']);
+  const res = await command.execute();
+  (await command.spawn()).kill();
+  return res.code === 0 ? res.stdout : res.stderr;
+};
+
+/**
+ * npm重置源
+ */
+export const resetNpmMirror = async () => {
+  const command = new Command('nvm', ['npm_mirror']);
+  const res = await command.execute();
+  (await command.spawn()).kill();
+  return res.code === 0 ? res.stdout : res.stderr;
+};
