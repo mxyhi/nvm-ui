@@ -1,10 +1,19 @@
 <script lang="ts" setup>
-import { installNodeVersion } from '@/cmd/nvm';
+import { getNodeList, installNodeVersion, type NvmListStatus } from '@/cmd/nvm';
 import { IconLeft } from '@arco-design/web-vue/es/icon';
-import { ref } from 'vue';
+import {
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+  type WatchStopHandle,
+} from 'vue';
 
 const version = ref('');
 const installStatus = ref(false);
+let stopVersionWatch: WatchStopHandle;
+const isInstall = ref(false);
+const list = ref<NvmListStatus[]>([]);
 
 const install = async () => {
   if (version.value) {
@@ -13,9 +22,40 @@ const install = async () => {
       const res = await installNodeVersion(version.value);
       installStatus.value = false;
       alert(res);
+      list.value = await getNodeList();
+      isInstall.value = list.value.some(it => {
+        if (it.version === version.value) {
+          return true;
+        } else if (it.version.startsWith(version.value)) {
+          if (it.version.endsWith('.0')) {
+            return true;
+          }
+        }
+        return false;
+      });
     }
   }
 };
+
+onMounted(async () => {
+  list.value = await getNodeList();
+  stopVersionWatch = watch(version, val => {
+    isInstall.value = list.value.some(it => {
+      if (it.version === val) {
+        return true;
+      } else if (it.version.startsWith(val)) {
+        if (it.version.endsWith('.0')) {
+          return true;
+        }
+      }
+      return false;
+    });
+  });
+});
+
+onBeforeUnmount(() => {
+  stopVersionWatch();
+});
 </script>
 
 <template>
@@ -43,8 +83,14 @@ const install = async () => {
           v-model.trim="version"
         />
         <div class="submit_box">
-          <a-button type="primary" @click="install" :loading="installStatus"
-            >安装</a-button
+          <a-button
+            type="primary"
+            @click="install"
+            :disabled="isInstall"
+            :loading="installStatus"
+            >{{
+              installStatus ? '安装中...' : isInstall ? '已安装' : '安装'
+            }}</a-button
           >
         </div>
       </a-space>

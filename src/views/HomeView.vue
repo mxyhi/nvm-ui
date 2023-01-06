@@ -31,12 +31,12 @@ const changeNvmList = async () => {
   }
 };
 
-onBeforeUnmount(() => {
-  clearTimeout(timer);
-});
-
 onMounted(async () => {
   changeNvmList();
+});
+
+onBeforeUnmount(() => {
+  clearTimeout(timer);
 });
 
 const useIt = async (version: string) => {
